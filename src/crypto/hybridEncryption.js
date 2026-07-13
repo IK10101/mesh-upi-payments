@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 function encryptPayload(payload,publicKeyPem){
     const aesKey = crypto.randomBytes(32);
-    const iv = crypto.randomBytes(16);
+    const iv = crypto.randomBytes(12);
     
     const cipher = crypto.createCipheriv('aes-256-gcm',aesKey,iv);
     const plaintext = JSON.stringify(payload);
