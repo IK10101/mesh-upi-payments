@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { isReplay } = require('../crypto/replayProtection');
 const { PrismaClient } = require('@prisma/client');
 const { PrismaPg } = require('@prisma/adapter-pg');
 const fs = require('fs');
@@ -19,8 +20,15 @@ async function createPayment(senderId, receiverId, amount) {
     timestamp: Date.now()
   };
 
+  const replayCheck = isReplay(payment);
+  if (replayCheck.isReplay) {
+    console.log('Payment rejected as replay:', replayCheck.reason);
+    return;
+  }
+
   const encrypted = encryptPayload(payment, publicKey);
 
+  try {
   const saved = await prisma.payment.create({
     data: {
       senderId,
@@ -35,9 +43,15 @@ async function createPayment(senderId, receiverId, amount) {
     }
   });
 
-console.log('Payment saved to database: ',saved);
-
-console.log('\nEncrypted package (what a bridge node would actually carry):',encrypted);
+  console.log('Payment saved to database: ', saved);
+  console.log('\nEncrypted package (what a bridge node would actually carry):', encrypted);
+  } catch (err) {
+  if (err.code === 'P2002') {
+    console.log('Payment rejected: nonce already exists in database (backup layer caught it)');
+  } else {
+    throw err;
+  }
+}
 }
 
 createPayment('user-001','user-002',500)
