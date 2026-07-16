@@ -27,7 +27,11 @@ async function createPayment(senderId, receiverId, amount) {
       receiverId,
       amount,
       nonce: payment.nonce,
-      status: 'pending'
+      status: 'pending',
+      encryptedData: encrypted.encryptedData,
+      encryptedKey: encrypted.encryptedKey,
+      iv: encrypted.iv,
+      authTag: encrypted.authTag
     }
   });
 
