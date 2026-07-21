@@ -20,11 +20,10 @@ async function createPayment(senderId, receiverId, amount) {
     timestamp: Date.now()
   };
 
-  const replayCheck = isReplay(payment);
-  if (replayCheck.isReplay) {
-    console.log('Payment rejected as replay:', replayCheck.reason);
-    return;
-  }
+const replayCheck = await isReplayRedis(payment);
+if (replayCheck.isReplay) {
+  return { success: false, reason: replayCheck.reason };
+}
 
   const encrypted = encryptPayload(payment, publicKey);
 

@@ -3,7 +3,7 @@ const {PrismaPg} = require('@prisma/adapter-pg');
 const crypto = require('crypto');
 const fs = require('fs');
 const {encryptPayload} = require('../crypto/hybridEncryption');
-const { isReplay}  = require('../crypto/replayProtection');
+const { isReplayRedis } = require('../crypto/redisReplayProtection');
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL});
 const prisma = new PrismaClient({adapter});
@@ -18,7 +18,7 @@ async function createPayment(senderId, receiverId, amount) {
     timestamp: Date.now()
   };
 
-  const replayCheck = isReplay(payment);
+  const replayCheck = await isReplayRedis(payment);
   if (replayCheck.isReplay) {
     return { success: false, reason: replayCheck.reason };
   }
