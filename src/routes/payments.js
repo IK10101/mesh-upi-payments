@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { createPayment, getPaymentById } = require('../services/paymentService');
 const authenticateBridgeNode = require('../middleware/authenticateBridgeNode');
+const paymentRateLimiter = require('../middleware/rateLimiter');
 
-router.post('/create', authenticateBridgeNode, async (req, res) => {
+router.post('/create', authenticateBridgeNode,paymentRateLimiter, async (req, res) => {
   const { senderId, receiverId, amount } = req.body;
 
   if (!senderId || !receiverId || !amount) {
