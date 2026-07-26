@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const {encryptPayload} = require('../crypto/hybridEncryption');
 const { isReplayRedis } = require('../crypto/redisReplayProtection');
+const { increment } = require('../metrics/counters');
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL});
 const prisma = new PrismaClient({adapter});
@@ -20,6 +21,7 @@ async function createPayment(senderId, receiverId, amount) {
 
   const replayCheck = await isReplayRedis(payment);
   if (replayCheck.isReplay) {
+    increment('paymentsRejectedReplay');
     return { success: false, reason: replayCheck.reason };
   }
 
@@ -39,14 +41,14 @@ async function createPayment(senderId, receiverId, amount) {
         authTag: encrypted.authTag
       }
     });
-
+    increment('paymentsSettled');
     return { success: true, payment: saved };
-    } catch (err) {
-
+  } catch (err) {
     if (err.code === 'P2002') {
+      increment('paymentsRejectedReplay');
       return { success: false, reason: 'Duplicate nonce (database constraint)' };
     }
-
+    increment('paymentsFailed');
     throw err;
   }
 }
@@ -56,4 +58,3 @@ async function getPaymentById(id) {
 }
 
 module.exports = { createPayment, getPaymentById };
-

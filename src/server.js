@@ -10,6 +10,9 @@ app.use('/api/payments', paymentsRouter);
 const authRouter = require('./routes/auth');
 app.use('/api/auth', authRouter);
 
+const metricsRouter = require('./routes/metrics');
+app.use('/api/metrics', metricsRouter);
+
 
 app.get('/health',(req,res)=>{
     res.json({status: 'ok',timestamp: new Date().toISOString()});
