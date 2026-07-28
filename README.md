@@ -85,7 +85,7 @@ Beyond the HTTP API, a few standalone scripts under `src/scripts/` demonstrate s
 
 Node.js, Express, PostgreSQL, Prisma ORM (with `@prisma/adapter-pg`), Redis (`ioredis`), JWT (`jsonwebtoken`), `express-rate-limit`, Docker Compose.
 
-## Limitations (stated honestly)
+## Limitations
 
 - **Double-spend is detected, not prevented, at the offline stage.** If a sender's device is compromised and creates two conflicting offline payments before either reaches the server, this system will settle whichever arrives first and reject the second as a duplicate/conflict — it does not prevent the attempt itself while both parties are offline. This is an acknowledged limitation of the underlying concept, not something unique to this implementation.
 - **In-memory metrics reset on server restart.** A production version would back the `/metrics` counters with Redis or a dedicated metrics/observability system rather than a plain in-process object.
