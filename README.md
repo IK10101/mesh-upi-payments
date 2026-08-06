@@ -1,6 +1,6 @@
 # Mesh UPI Payments
 
-A mesh-routed, offline-capable payment settlement system — a Node.js reimplementation of the "UPI without internet" concept, rebuilt with a stronger distributed-systems foundation than the original: Redis-backed atomic idempotency, JWT-authenticated bridge nodes, per-node rate limiting, and Docker Compose for one-command local setup.
+A mesh-routed, offline-capable payment settlement system — a Node.js implementation of the "UPI without internet" concept, built with a stronger distributed-systems foundation : Redis-backed atomic idempotency, JWT-authenticated bridge nodes, per-node rate limiting, and Docker Compose for one-command local setup.
 
 ## The problem this solves
 
